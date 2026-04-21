@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Many-to-Many OS Thread Scheduler Simulator</title>
+    <meta name="description" content="Advanced Many-to-Many thread scheduling simulator for Operating Systems demonstration.">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="app-container">
+        <header class="app-header">
+            <div class="logo">
+                <div class="logo-icon"></div>
+                <h1>OS Thread Simulator <span class="badge">M:N Model</span></h1>
+            </div>
+            <div class="metrics-bar">
+                <div class="metric">
+                    <span class="metric-label">CPU Utilization</span>
+                    <span class="metric-value" id="cpu-util">0%</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Context Switches</span>
+                    <span class="metric-value" id="ctx-switches">0</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Throughput</span>
+                    <span class="metric-value" id="throughput">0 t/s</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Sim Time</span>
+                    <span class="metric-value" id="sim-time">0.0s</span>
+                </div>
+            </div>
+        </header>
+
+        <main class="main-content">
+            <aside class="control-panel">
+                <div class="panel-section">
+                    <h2>Configuration</h2>
+                    
+                    <div class="control-group">
+                        <label for="num-user-threads">User Threads (M): <span id="val-user-threads">12</span></label>
+                        <input type="range" id="num-user-threads" min="1" max="24" value="12">
+                    </div>
+
+                    <div class="control-group">
+                        <label for="num-kernel-threads">Kernel Threads (N): <span id="val-kernel-threads">4</span></label>
+                        <input type="range" id="num-kernel-threads" min="1" max="8" value="4">
+                    </div>
+
+                    <div class="control-group">
+                        <label for="num-cpus">CPU Cores: <span id="val-cpus">2</span></label>
+                        <input type="range" id="num-cpus" min="1" max="4" value="2">
+                    </div>
+
+                    <div class="control-group">
+                        <label for="scheduling-algo">Kernel Scheduling</label>
+                        <select id="scheduling-algo">
+                            <option value="rr">Round Robin (RR)</option>
+                            <option value="fcfs">First Come First Serve (FCFS)</option>
+                        </select>
+                    </div>
+
+                    <div class="control-group">
+                        <label for="sim-speed">Simulation Speed: <span id="val-sim-speed">1x</span></label>
+                        <input type="range" id="sim-speed" min="1" max="100" value="50">
+                    </div>
+                </div>
+
+                <div class="panel-section">
+                    <h2>Simulation Controls</h2>
+                    <div class="btn-group">
+                        <button id="btn-start" class="btn primary">Start</button>
+                        <button id="btn-pause" class="btn secondary" disabled>Pause</button>
+                        <button id="btn-reset" class="btn danger">Reset</button>
+                    </div>
+                </div>
+
+                <div class="panel-section">
+                    <h2>Scenarios / Events</h2>
+                    <p class="section-desc">Trigger events dynamically during simulation.</p>
+                    <button id="btn-spawn-user" class="btn outline" disabled>Spawn User Thread</button>
+                    <button id="btn-trigger-io" class="btn outline" disabled>Trigger I/O Block on Random Thread</button>
+                </div>
+                
+                <div class="legend">
+                    <h3>Legend</h3>
+                    <div class="legend-item"><span class="color-box state-ready"></span> Ready / Waiting</div>
+                    <div class="legend-item"><span class="color-box state-running"></span> Running</div>
+                    <div class="legend-item"><span class="color-box state-blocked"></span> Blocked (I/O)</div>
+                    <div class="legend-item"><span class="color-box state-completed"></span> Completed</div>
+                </div>
+            </aside>
+
+            <section class="visualization-area">
+                
+                <div class="pool-container">
+                    <div class="pool-header">
+                        <h3>User Space</h3>
+                        <span class="pool-stats" id="stats-user-space">0 active</span>
+                    </div>
+                    <!-- User Threads queue up here -->
+                    <div class="pool" id="user-pool"></div>
+                </div>
+
+                <div class="mapping-arrows">
+                    <!-- Visual representation of mapping -->
+                    <div class="arrow-container" id="mapping-layer-1"></div>
+                </div>
+
+                <div class="pool-container kernel-space">
+                    <div class="pool-header">
+                        <h3>Kernel Space (OS)</h3>
+                        <span class="pool-stats" id="stats-kernel-space">0 active</span>
+                    </div>
+                    <!-- Kernel Threads live here -->
+                    <div class="pool" id="kernel-pool"></div>
+                </div>
+
+                <div class="mapping-arrows">
+                    <div class="arrow-container" id="mapping-layer-2"></div>
+                </div>
+
+                <div class="pool-container hardware-space">
+                    <div class="pool-header">
+                        <h3>Hardware (CPU Cores)</h3>
+                    </div>
+                    <!-- CPU Cores live here -->
+                    <div class="pool cpu-pool" id="cpu-pool"></div>
+                </div>
+
+            </section>
+        </main>
+    </div>
+
+    <!-- Modals or overlays if needed -->
+    <div id="toast-container"></div>
+
+    <script src="simulator.js" type="module"></script>
+    <script src="ui.js" type="module"></script>
+</body>
+</html>
